@@ -1,55 +1,146 @@
 # EcoTrack AI: Carbon Footprint Assistant
 
-**EcoTrack AI** is an interactive personal assistant designed to help users understand and reduce their carbon footprint. It tracks daily activities (transport, energy use, diet, waste) and converts them into CO₂-equivalent (CO₂e) emissions using standardized factors. By providing personalized insights, tips, and gamified goals, EcoTrack AI makes sustainability actionable.
+EcoTrack AI helps users log everyday activities, calculate kg CO2e impact, understand their biggest emission sources, and get practical reduction advice from an AI-style sustainability coach.
 
 ## Problem Statement
-Everyday actions emit greenhouse gases. Most people lack immediate feedback on how their lifestyle choices translate into carbon impact. EcoTrack AI addresses this by providing a dynamic, personalized carbon tracker and advisor that calculates footprint in real-time and suggests simple reduction actions.
 
-## Key Features
-- **Activity Logging & Emission Calculation:** Users input daily activities and the system calculates their CO₂e footprint using IPCC/EPA factors.
-- **Personalized AI Chat:** An AI-powered chatbot interprets user input and responds with friendly, actionable feedback.
-- **Dashboard & Progress Visualization:** A React-based visual dashboard displays charts of emissions by category over time.
+Most people do not get immediate feedback on how daily choices affect their carbon footprint. EcoTrack AI turns transport, energy, diet, and waste activity into measurable emissions, then converts that data into scorecards, trends, goals, achievements, and personalized recommendations.
+
+## Features
+
+- Activity logging for transport, energy, diet, and waste.
+- Category-specific CO2e calculation factors.
+- Dashboard with total emissions, carbon score, category breakdown, daily trend, monthly projection, top recommendation, goal tracking, and achievements.
+- Eco AI Coach with conversation history, deterministic sustainability guidance, and optional OpenAI integration through `OPENAI_API_KEY`.
+- Production-ready single-service deployment for Google Cloud Run.
+- Input validation, parameterized SQLite queries, API rate limiting, CORS controls, and security headers.
+- Backend API tests for calculation, validation, summary insights, and chat fallback.
 
 ## Architecture
-The system follows a modular web architecture:
-- **Frontend:** React + Vite + Tailwind CSS + Chart.js
-- **Backend:** Node.js + Express + SQLite
-- **AI/LLM:** Mocked NLP for MVP (Designed for OpenAI integration)
 
-## Quick Start (Local Development)
+```text
+React + Vite frontend
+        |
+        | /api/*
+        v
+Node.js + Express API
+        |
+        v
+SQLite activity and emissions database
+        |
+        v
+Insights engine + optional OpenAI chat completion
+```
 
-### 1. Install Dependencies
-**Backend:**
+In production, Express serves the built Vite frontend and the API from one Cloud Run container.
+
+## Local Development
+
+Install backend dependencies:
+
 ```bash
 cd backend
 npm install
 ```
 
-**Frontend:**
+Install frontend dependencies:
+
 ```bash
 cd frontend
 npm install
 ```
 
-### 2. Run the Application
-Start the backend server (runs on `localhost:3001`):
+Start the backend:
+
 ```bash
 cd backend
-node server.js
+npm run dev
 ```
 
-Start the frontend development server (runs on `localhost:5173`):
+Start the frontend:
+
 ```bash
 cd frontend
 npm run dev
 ```
 
-## Security & Performance
-- **Security:** Input validation is performed on the Express backend, and parameterized queries are used in SQLite to prevent SQL injection.
-- **Performance:** Lightweight SQLite database and optimized React bundle using Vite ensure fast load times and minimal resource footprint.
+The frontend dev server runs at `http://localhost:5173` and proxies API calls by using `VITE_API_BASE_URL` when needed. By default, production uses same-origin `/api/*` routes.
 
-## Testing & Accessibility
-- The UI follows basic WCAG guidelines for high contrast and responsive layout.
-- The project is structured cleanly, strictly following ESLint/Prettier code formatting styles.
+## Environment Variables
 
-*Built for PromptWars - Sustainability/Carbon Footprint Vertical.*
+Backend:
+
+- `PORT`: server port. Cloud Run sets this automatically.
+- `DB_PATH`: SQLite database path. Defaults to `backend/ecotrack.sqlite`.
+- `CORS_ORIGIN`: allowed browser origin. Defaults to local Vite origin in development and same-origin in production.
+- `RATE_LIMIT_PER_MINUTE`: per-IP API limit. Defaults to `90`.
+- `MONTHLY_GOAL_KG`: monthly footprint goal. Defaults to `120`.
+- `OPENAI_API_KEY`: optional key for real LLM chat responses.
+- `OPENAI_MODEL`: optional OpenAI chat model. Defaults to `gpt-4o-mini`.
+
+Frontend:
+
+- `VITE_API_BASE_URL`: optional API origin for local split-server development.
+
+## Testing
+
+Backend:
+
+```bash
+cd backend
+npm test
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run lint
+npm run build
+```
+
+## Google Cloud Run Deployment
+
+The repository includes a root `Dockerfile` that builds the Vite frontend and runs the Express backend as a single production service.
+
+Set your Google Cloud project:
+
+```bash
+gcloud config set project YOUR_PROJECT_ID
+```
+
+Deploy:
+
+```bash
+gcloud run deploy ecotrack-ai \
+  --source . \
+  --region asia-south1 \
+  --allow-unauthenticated \
+  --set-env-vars NODE_ENV=production,RATE_LIMIT_PER_MINUTE=120,MONTHLY_GOAL_KG=120
+```
+
+With OpenAI enabled:
+
+```bash
+gcloud run services update ecotrack-ai \
+  --region asia-south1 \
+  --set-env-vars OPENAI_API_KEY=YOUR_KEY,OPENAI_MODEL=gpt-4o-mini
+```
+
+For a hackathon demo, the default SQLite file is acceptable. For durable production data, mount a managed database or Cloud SQL-backed storage instead of relying on container-local SQLite.
+
+## API
+
+- `GET /api/health`: service health.
+- `POST /api/activities`: log an activity.
+- `GET /api/emissions`: daily emission totals.
+- `GET /api/summary`: activities, emissions, insights, goals, achievements.
+- `POST /api/chat`: Eco AI Coach response.
+
+## PromptWars Readiness
+
+- Real-world usability: personalized dashboard and reduction plan.
+- AI design: optional LLM integration with a strong deterministic fallback.
+- Security: validation, rate limiting, secure headers, parameterized queries.
+- Testing: focused backend coverage and clean frontend lint/build.
+- Deployment: Cloud Run-ready container configuration.

@@ -1,0 +1,8 @@
+.git
+.git.zip
+**/node_modules
+**/dist
+backend/ecotrack.sqlite
+backend/coverage
+.env
+npm-debug.log*
