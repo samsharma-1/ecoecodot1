@@ -65,25 +65,28 @@ function Dashboard({ emissions, activities, insights, loading }) {
     achievements: [],
   };
 
-  const dailyData = {
-    labels: emissions.map((item) => item.date),
-    datasets: [
-      {
-        label: 'kg CO2e',
-        data: emissions.map((item) => item.total_CO2e),
-        backgroundColor: '#047857',
-        borderColor: '#065f46',
-        borderWidth: 1,
-      },
-    ],
-  };
+  const safeEmissions = Array.isArray(emissions) ? emissions : [];
+  const safeActivities = Array.isArray(activities) ? activities : [];
 
+const dailyData = {
+  labels: safeEmissions.slice(-10).map((item) => item.date),
+  datasets: [
+    {
+      label: 'kg CO2e',
+      data: safeEmissions.slice(-10).map((item) => item.total_CO2e),
+      backgroundColor: '#047857',
+      borderColor: '#065f46',
+      borderWidth: 1,
+    },
+  ],
+};
+  
   const trendData = {
-    labels: emissions.slice(-10).map((item) => item.date),
+    labels: safeEmissions.slice(-10).map((item) => item.date),
     datasets: [
       {
         label: 'Daily trend',
-        data: emissions.slice(-10).map((item) => item.total_CO2e),
+        data: safeEmissions.slice(-10).map((item) => item.total_CO2e),
         borderColor: '#2563eb',
         backgroundColor: 'rgba(37, 99, 235, 0.12)',
         tension: 0.35,
@@ -114,13 +117,13 @@ function Dashboard({ emissions, activities, insights, loading }) {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-slate-950">Your Footprint Dashboard</h2>
-        <p className="mt-1 text-sm text-slate-600">Track emissions, forecast impact, and choose the next best reduction.</p>
+        <p className="mt-1 text-sm text-slate-600">Track safeEmissions, forecast impact, and choose the next best reduction.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Stat label="Total emissions" value={`${safeInsights.totalEmissions.toFixed(2)} kg CO2e`} tone="emerald" />
+        <Stat label="Total safeEmissions" value={`${safeInsights.totalEmissions.toFixed(2)} kg CO2e`} tone="emerald" />
         <Stat label="Carbon score" value={`${safeInsights.carbonScore}/100`} tone="blue" />
-        <Stat label="Days tracked" value={emissions.length} />
+        <Stat label="Days tracked" value={safeEmissions.length} />
         <Stat label="Monthly projection" value={`${safeInsights.monthlyProjection.toFixed(1)} kg`} tone="amber" />
       </div>
 
@@ -128,13 +131,13 @@ function Dashboard({ emissions, activities, insights, loading }) {
         <section className="rounded-lg border border-slate-200 bg-white p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="font-bold text-slate-900">Daily Emissions</h3>
+              <h3 className="font-bold text-slate-900">Daily safeEmissions</h3>
               <p className="text-sm text-slate-600">kg CO2e by logged date</p>
             </div>
             <TrendingDown className="h-5 w-5 text-blue-700" aria-hidden="true" />
           </div>
           <div className="h-72">
-            {emissions.length ? (
+            {safeEmissions.length ? (
               <Bar options={chartOptions} data={dailyData} />
             ) : (
               <div className="flex h-full items-center justify-center rounded-lg bg-slate-50 text-sm text-slate-500">
@@ -210,7 +213,7 @@ function Dashboard({ emissions, activities, insights, loading }) {
       <section className="rounded-lg border border-slate-200 bg-white p-5">
         <h3 className="font-bold text-slate-900">Recent Trend</h3>
         <div className="mt-4 h-64">
-          {emissions.length ? (
+          {safeEmissions.length ? (
             <Line options={chartOptions} data={trendData} />
           ) : (
             <div className="flex h-full items-center justify-center rounded-lg bg-slate-50 text-sm text-slate-500">
@@ -220,7 +223,7 @@ function Dashboard({ emissions, activities, insights, loading }) {
         </div>
       </section>
 
-      <p className="text-xs text-slate-500">{activities.length} activities logged using category-specific emission factors.</p>
+      <p className="text-xs text-slate-500">{safeActivities.length} activities logged using category-specific emission factors.</p>
     </div>
   );
 }

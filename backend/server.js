@@ -60,12 +60,13 @@ const db = new sqlite3.Database(dbPath, (err) => {
       }
 
       const migrations = [];
-      if (!columns.some((column) => column.name === 'co2e')) {
-        migrations.push('ALTER TABLE ActivityLog ADD COLUMN co2e REAL');
-      }
-      if (!columns.some((column) => column.name === 'created_at')) {
-        migrations.push('ALTER TABLE ActivityLog ADD COLUMN created_at TEXT DEFAULT CURRENT_TIMESTAMP');
-      }
+if (!columns.some((column) => column.name === 'co2e')) {
+  migrations.push('ALTER TABLE ActivityLog ADD COLUMN co2e REAL');
+}
+
+if (!columns.some((column) => column.name === 'created_at')) {
+  migrations.push('ALTER TABLE ActivityLog ADD COLUMN created_at TEXT');
+}
 
       if (!migrations.length) {
         resolveDbReady();

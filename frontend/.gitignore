@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Database
+*.sqlite
+*.db
+
+# Environment variables
+.env
+.env.local
+
+# Archives
+*.zip
+
+# Build folders
+build/
+
+# OS files
+Thumbs.db
