@@ -380,11 +380,12 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-const frontendDist = path.resolve(__dirname, '..', 'frontend', 'dist');
 if (isProduction) {
-  app.use(express.static(frontendDist));
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(frontendDist, 'index.html'));
+  app.get('/', (req, res) => {
+    res.json({
+      status: 'ok',
+      service: 'EcoTrack AI API',
+    });
   });
 }
 
