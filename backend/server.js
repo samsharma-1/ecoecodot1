@@ -53,6 +53,37 @@ const db = new sqlite3.Database(dbPath, (err) => {
         total_CO2e REAL NOT NULL DEFAULT 0
       )
     `);
+    db.run(`
+      CREATE TABLE IF NOT EXISTS EcoScore (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT DEFAULT 'default',
+        level TEXT DEFAULT 'Beginner',
+        score INTEGER DEFAULT 0,
+        badges TEXT DEFAULT '[]',
+        streak INTEGER DEFAULT 0,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    db.run(`
+      CREATE TABLE IF NOT EXISTS Simulations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL,
+        before_value REAL,
+        after_value REAL,
+        co2_saved REAL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    db.run(`
+      CREATE TABLE IF NOT EXISTS EcoFeed (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        content TEXT,
+        type TEXT,
+        url TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
     db.all('PRAGMA table_info(ActivityLog)', (pragmaErr, columns = []) => {
       if (pragmaErr) {
         rejectDbReady(pragmaErr);
@@ -357,6 +388,76 @@ app.get('/api/summary', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: 'Could not load dashboard summary.' });
+  }
+});
+
+app.get('/api/score', async (req, res) => {
+  try {
+    let scoreRow = await allQuery("SELECT * FROM EcoScore WHERE user_id = 'default'");
+    if (!scoreRow.length) {
+      await runQuery("INSERT INTO EcoScore (user_id) VALUES ('default')");
+      scoreRow = await allQuery("SELECT * FROM EcoScore WHERE user_id = 'default'");
+    }
+    res.json(scoreRow[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Could not load score.' });
+  }
+});
+
+app.post('/api/score/badges', async (req, res) => {
+  try {
+    const { badge } = req.body;
+    res.json({ success: true, badge });
+  } catch (err) {
+    res.status(500).json({ error: 'Could not update badge.' });
+  }
+});
+
+app.post('/api/simulate', async (req, res) => {
+  try {
+    const { category, before_value, after_value, co2_saved } = req.body;
+    const result = await runQuery(
+      'INSERT INTO Simulations (category, before_value, after_value, co2_saved) VALUES (?, ?, ?, ?)',
+      [category, before_value, after_value, co2_saved]
+    );
+    res.json({ id: result.lastID, success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Could not save simulation.' });
+  }
+});
+
+app.get('/api/feed', async (req, res) => {
+  try {
+    const feed = await allQuery('SELECT * FROM EcoFeed ORDER BY created_at DESC LIMIT 20');
+    if (feed.length === 0) {
+      const mockFeed = [
+        { id: 1, title: 'Solar Panel efficiency hits new high', content: 'New perovskite solar cells have reached 30% efficiency, promising cheaper renewable energy.', type: 'news' },
+        { id: 2, title: 'Local public transit expansion', content: 'City council approves 5 new electric bus routes starting next month.', type: 'local' },
+        { id: 3, title: 'Composting Guide', content: 'Check out the updated rules for composting in your area to reduce waste emissions.', type: 'tip' }
+      ];
+      res.json(mockFeed);
+    } else {
+      res.json(feed);
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Could not load feed.' });
+  }
+});
+
+app.post('/api/ecotwin', async (req, res) => {
+  try {
+    const { totalEmissions } = req.body; 
+    const current = totalEmissions || 0;
+    const twinData = {
+      currentEmissions: current,
+      targetEmissions: current * 0.6,
+      financialSavings: 150, 
+      gapAnalysis: 'Your biggest gap is transport. Switching to EV or Public Transit saves 40% of your footprint.',
+      actionRoadmap: ['Switch to EV/Transit', 'Install Solar/Energy Efficient Appliances', 'Compost daily']
+    };
+    res.json(twinData);
+  } catch (err) {
+    res.status(500).json({ error: 'Could not generate EcoTwin.' });
   }
 });
 

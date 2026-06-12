@@ -45,27 +45,27 @@ function Chatbot() {
 
   return (
     <div className="flex h-[calc(100vh-150px)] min-h-[560px] flex-col">
-      <h2 className="text-2xl font-bold text-slate-950">Eco AI Coach</h2>
-      <p className="mt-1 text-sm text-slate-600">Personalized carbon advice based on your logged activities.</p>
+      <h2 className="text-3xl font-bold text-white">Eco AI Coach</h2>
+      <p className="mt-1 text-sm text-slate-400">Personalized carbon advice based on your logged activities.</p>
 
-      <div className="mt-5 flex-grow overflow-y-auto rounded-lg border border-slate-200 bg-white p-4" aria-live="polite">
-        <div className="flex flex-col gap-4">
+      <div className="mt-5 flex-grow overflow-y-auto rounded-3xl glass-panel border border-slate-700/50 p-6" aria-live="polite">
+        <div className="flex flex-col gap-6">
           {messages.map((msg, idx) => (
-            <div key={`${msg.role}-${idx}`} className={`flex max-w-[88%] gap-3 ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
-              <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md ${msg.role === 'user' ? 'bg-blue-700 text-white' : 'bg-emerald-700 text-white'}`}>
+            <div key={`${msg.role}-${idx}`} className={`flex max-w-[88%] gap-4 ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
+              <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl shadow-lg ${msg.role === 'user' ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white' : 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white'}`}>
                 {msg.role === 'user' ? <User className="h-5 w-5" aria-hidden="true" /> : <Bot className="h-5 w-5" aria-hidden="true" />}
               </div>
-              <div className={`rounded-lg p-3 text-sm leading-6 ${msg.role === 'user' ? 'bg-blue-700 text-white' : 'border border-slate-200 bg-slate-50 text-slate-800'}`}>
+              <div className={`rounded-2xl p-4 text-sm leading-6 shadow-md ${msg.role === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-500 text-white rounded-tr-sm' : 'glass-panel border border-slate-600/50 bg-slate-800/80 text-slate-200 rounded-tl-sm'}`}>
                 {msg.content}
               </div>
             </div>
           ))}
           {loading && (
-            <div className="flex max-w-[88%] gap-3">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-emerald-700 text-white">
+            <div className="flex max-w-[88%] gap-4">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg">
                 <Bot className="h-5 w-5" aria-hidden="true" />
               </div>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm italic text-slate-500">
+              <div className="rounded-2xl glass-panel border border-slate-600/50 bg-slate-800/80 p-4 text-sm italic text-slate-400 rounded-tl-sm">
                 Thinking...
               </div>
             </div>
@@ -74,7 +74,7 @@ function Chatbot() {
         </div>
       </div>
 
-      <form onSubmit={handleSend} className="mt-4 flex gap-2">
+      <form onSubmit={handleSend} className="mt-6 flex gap-3">
         <label htmlFor="chat-message" className="sr-only">Message Eco AI Coach</label>
         <input
           id="chat-message"
@@ -82,15 +82,15 @@ function Chatbot() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Ask for a focused reduction plan..."
-          className="min-w-0 flex-grow rounded-md border border-slate-300 p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+          className="min-w-0 flex-grow rounded-xl border border-slate-600 bg-slate-800/50 p-4 text-white placeholder-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
         />
         <button
           type="submit"
           disabled={loading || !input.trim()}
           aria-label="Send message"
-          className="flex min-h-12 w-12 items-center justify-center rounded-md bg-emerald-700 text-white transition-colors hover:bg-emerald-800 disabled:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+          className="flex min-h-12 w-14 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all hover:from-emerald-500 hover:to-teal-400 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
         >
-          <Send className="h-5 w-5" aria-hidden="true" />
+          <Send className="h-6 w-6" aria-hidden="true" />
         </button>
       </form>
     </div>
