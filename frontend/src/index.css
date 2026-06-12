@@ -18,6 +18,7 @@ body {
     radial-gradient(at 0% 0%, hsla(142, 76%, 36%, 0.15) 0px, transparent 50%),
     radial-gradient(at 100% 100%, hsla(217, 32%, 17%, 0.15) 0px, transparent 50%);
   background-attachment: fixed;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 code {
@@ -40,4 +41,56 @@ code {
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+  background-color: #f8fafc;
+  color: #0f172a;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(142, 76%, 36%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(217, 32%, 17%, 0.05) 0px, transparent 50%);
+}
+
+.light-mode .glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .text-white {
+  color: #0f172a;
+}
+.light-mode .text-slate-400 {
+  color: #475569;
+}
+.light-mode .text-slate-300 {
+  color: #334155;
+}
+.light-mode .text-slate-200 {
+  color: #1e293b;
+}
+
+.light-mode .bg-slate-800\/50,
+.light-mode .bg-slate-800,
+.light-mode .bg-slate-800\/80,
+.light-mode .hover\:bg-slate-800\/50:hover {
+  background-color: #f1f5f9;
+}
+
+.light-mode .border-slate-700\/50,
+.light-mode .border-slate-700\/30,
+.light-mode .border-slate-600,
+.light-mode .border-slate-600\/50 {
+  border-color: #e2e8f0;
+}
+
+.light-mode .active-tab-text {
+  color: #0f172a;
+}
+.light-mode .inactive-tab-text:hover {
+  color: #0f172a;
+}
+.light-mode .app-subtitle {
+  color: #475569;
 }

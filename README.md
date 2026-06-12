@@ -1,146 +1,69 @@
-# EcoTrack AI: Carbon Footprint Assistant
+# 🌿 EcoTrack AI
 
-EcoTrack AI helps users log everyday activities, calculate kg CO2e impact, understand their biggest emission sources, and get practical reduction advice from an AI-style sustainability coach.
+EcoTrack AI is a premium, AI-powered Sustainability Intelligence Platform designed to help users track, understand, and reduce their carbon footprint. By combining sleek design with actionable data, EcoTrack AI acts as your personal carbon coach.
 
-## Problem Statement
+## ✨ Features
 
-Most people do not get immediate feedback on how daily choices affect their carbon footprint. EcoTrack AI turns transport, energy, diet, and waste activity into measurable emissions, then converts that data into scorecards, trends, goals, achievements, and personalized recommendations.
+- **📊 Footprint Dashboard**: A comprehensive overview of your daily emissions, category breakdown, and progress towards your monthly carbon goals.
+- **📝 Log Activity**: An intuitive interface to log transport, energy, diet, and waste activities, which are automatically converted to kg CO₂e.
+- **🎛️ Savings Simulator**: Interactive sliders allowing you to experiment with reductions in transport, energy, and waste to see the immediate impact on your footprint.
+- **🔮 EcoTwin**: An innovative split-view feature contrasting your "Current You" with a "Future Sustainable You." It generates an AI-powered roadmap for reduction and calculates your financial ROI for going green.
+- **🏆 EcoScore Gamification**: Earn experience points (XP) for tracking and reducing emissions. Level up from "Beginner" to "Earth Guardian" and unlock milestone badges.
+- **📰 Real EcoFeed**: Stay informed with curated, real-time climate news, local transit updates, and sustainable living tips.
+- **💬 Eco AI Coach**: A built-in chat interface powered by an intelligent assistant to give you personalized reduction plans and answer any sustainability questions.
+- **🌓 Adaptive Theme**: A premium glassmorphism design that features a seamless toggle between an elegant Dark Mode and a crisp Light Mode, utilizing smooth micro-animations.
 
-## Features
+## 🛠️ Tech Stack
 
-- Activity logging for transport, energy, diet, and waste.
-- Category-specific CO2e calculation factors.
-- Dashboard with total emissions, carbon score, category breakdown, daily trend, monthly projection, top recommendation, goal tracking, and achievements.
-- Eco AI Coach with conversation history, deterministic sustainability guidance, and optional OpenAI integration through `OPENAI_API_KEY`.
-- Production-ready single-service deployment for Google Cloud Run.
-- Input validation, parameterized SQLite queries, API rate limiting, CORS controls, and security headers.
-- Backend API tests for calculation, validation, summary insights, and chat fallback.
+### Frontend
+- **Framework**: React (via Vite)
+- **Styling**: Tailwind CSS v4, custom CSS with glassmorphism variables
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Charts**: Chart.js / React-Chartjs-2
+- **Network**: Axios
 
-## Architecture
+### Backend
+- **Framework**: Node.js & Express
+- **Database**: SQLite3 (serverless, disk-based DB)
+- **AI Integration**: OpenAI (for the EcoTwin and Eco AI Chat endpoints)
 
-```text
-React + Vite frontend
-        |
-        | /api/*
-        v
-Node.js + Express API
-        |
-        v
-SQLite activity and emissions database
-        |
-        v
-Insights engine + optional OpenAI chat completion
-```
+## 🚀 Getting Started
 
-In production, Express serves the built Vite frontend and the API from one Cloud Run container.
+### Prerequisites
+- Node.js (v18+)
+- npm or yarn
 
-## Local Development
-
-Install backend dependencies:
-
+### 1. Setup the Backend
+Navigate to the backend directory and install dependencies:
 ```bash
 cd backend
 npm install
 ```
 
-Install frontend dependencies:
+Start the backend server (runs on `http://localhost:3001` by default):
+```bash
+node server.js
+```
+*Note: Ensure you have your `.env` configured if using the OpenAI API.*
 
+### 2. Setup the Frontend
+Open a new terminal, navigate to the frontend directory, and install dependencies:
 ```bash
 cd frontend
 npm install
 ```
 
-Start the backend:
-
+Start the Vite development server:
 ```bash
-cd backend
 npm run dev
 ```
 
-Start the frontend:
+### 3. View the App
+Open `http://localhost:5173` in your browser. The frontend will automatically proxy/communicate with your local backend on port 3001.
 
-```bash
-cd frontend
-npm run dev
-```
+## 🎨 Design Philosophy
+The application was designed to move away from standard "boring data dashboards." By utilizing frosted glass panels (`backdrop-blur`), vibrant emerald/teal gradients, and `framer-motion` layout animations, EcoTrack AI offers a high-end, engaging user experience that makes tracking sustainability both beautiful and rewarding.
 
-The frontend dev server runs at `http://localhost:5173` and proxies API calls by using `VITE_API_BASE_URL` when needed. By default, production uses same-origin `/api/*` routes.
-
-## Environment Variables
-
-Backend:
-
-- `PORT`: server port. Cloud Run sets this automatically.
-- `DB_PATH`: SQLite database path. Defaults to `backend/ecotrack.sqlite`.
-- `CORS_ORIGIN`: allowed browser origin. Defaults to local Vite origin in development and same-origin in production.
-- `RATE_LIMIT_PER_MINUTE`: per-IP API limit. Defaults to `90`.
-- `MONTHLY_GOAL_KG`: monthly footprint goal. Defaults to `120`.
-- `OPENAI_API_KEY`: optional key for real LLM chat responses.
-- `OPENAI_MODEL`: optional OpenAI chat model. Defaults to `gpt-4o-mini`.
-
-Frontend:
-
-- `VITE_API_BASE_URL`: optional API origin for local split-server development.
-
-## Testing
-
-Backend:
-
-```bash
-cd backend
-npm test
-```
-
-Frontend:
-
-```bash
-cd frontend
-npm run lint
-npm run build
-```
-
-## Google Cloud Run Deployment
-
-The repository includes a root `Dockerfile` that builds the Vite frontend and runs the Express backend as a single production service.
-
-Set your Google Cloud project:
-
-```bash
-gcloud config set project YOUR_PROJECT_ID
-```
-
-Deploy:
-
-```bash
-gcloud run deploy ecotrack-ai \
-  --source . \
-  --region asia-south1 \
-  --allow-unauthenticated \
-  --set-env-vars NODE_ENV=production,RATE_LIMIT_PER_MINUTE=120,MONTHLY_GOAL_KG=120
-```
-
-With OpenAI enabled:
-
-```bash
-gcloud run services update ecotrack-ai \
-  --region asia-south1 \
-  --set-env-vars OPENAI_API_KEY=YOUR_KEY,OPENAI_MODEL=gpt-4o-mini
-```
-
-For a hackathon demo, the default SQLite file is acceptable. For durable production data, mount a managed database or Cloud SQL-backed storage instead of relying on container-local SQLite.
-
-## API
-
-- `GET /api/health`: service health.
-- `POST /api/activities`: log an activity.
-- `GET /api/emissions`: daily emission totals.
-- `GET /api/summary`: activities, emissions, insights, goals, achievements.
-- `POST /api/chat`: Eco AI Coach response.
-
-## PromptWars Readiness
-
-- Real-world usability: personalized dashboard and reduction plan.
-- AI design: optional LLM integration with a strong deterministic fallback.
-- Security: validation, rate limiting, secure headers, parameterized queries.
-- Testing: focused backend coverage and clean frontend lint/build.
-- Deployment: Cloud Run-ready container configuration.
+---
+*Built as a final project for an advanced AI-assisted development workflow.*

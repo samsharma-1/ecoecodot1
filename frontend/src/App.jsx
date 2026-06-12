@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Leaf, Activity, MessageSquare, BarChart2, Target, Trophy, Settings2, Globe, TrendingUp } from 'lucide-react';
+import { Leaf, Activity, MessageSquare, BarChart2, Target, Trophy, Settings2, Globe, TrendingUp, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from './api';
 import ActivityForm from './components/ActivityForm';
@@ -17,6 +17,7 @@ function App() {
   const [insights, setInsights] = useState(null);
   const [status, setStatus] = useState('loading');
   const [scoreData, setScoreData] = useState(null);
+  const [theme, setTheme] = useState('dark');
 
   const fetchSummary = async () => {
     try {
@@ -37,7 +38,23 @@ function App() {
 
   useEffect(() => {
     fetchSummary();
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-mode');
+    }
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    if (newTheme === 'light') {
+      document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
+    }
+  };
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart2 },
@@ -50,7 +67,7 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen text-slate-100">
+    <div className="min-h-screen text-slate-100 transition-colors duration-300 app-container">
       <header className="glass-panel sticky top-0 z-50">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-8">
           <div className="flex items-center gap-3">
@@ -63,12 +80,21 @@ function App() {
             </motion.div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">EcoTrack AI</h1>
-              <p className="text-sm text-slate-400">Personal carbon footprint coach</p>
+              <p className="text-sm text-slate-400 app-subtitle">Personal carbon footprint coach</p>
             </div>
           </div>
-          <div className="hidden items-center gap-2 rounded-xl glass-panel px-4 py-2 text-sm text-emerald-400 font-medium md:flex border border-emerald-500/20">
-            <Target className="h-4 w-4" aria-hidden="true" />
-            {insights ? `${insights.carbonScore}/100 ${insights.scoreStatus}` : 'Tracking score'}
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={toggleTheme} 
+              className="flex items-center justify-center h-10 w-10 rounded-full glass-panel hover:bg-emerald-500/10 transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5 text-indigo-400" />}
+            </button>
+            <div className="hidden items-center gap-2 rounded-xl glass-panel px-4 py-2 text-sm text-emerald-400 font-medium md:flex border border-emerald-500/20">
+              <Target className="h-4 w-4" aria-hidden="true" />
+              {insights ? `${insights.carbonScore}/100 ${insights.scoreStatus}` : 'Tracking score'}
+            </div>
           </div>
         </div>
       </header>
@@ -84,8 +110,8 @@ function App() {
                 aria-current={activeTab === id ? 'page' : undefined}
                 className={`relative flex min-h-[48px] min-w-max items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300 md:justify-start ${
                   activeTab === id
-                    ? 'text-white'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                    ? 'text-white active-tab-text'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 inactive-tab-text'
                 }`}
               >
                 {activeTab === id && (
